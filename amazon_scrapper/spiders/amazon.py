@@ -3,23 +3,22 @@ from urllib.parse import urlencode
 import re
 import urllib.request
 import os
-# Title of the Product
-# 	One image and One Video(if video is available)
-# 		Number of stars
-# 		Price of the Product
-# 		Published date of that product on amazon
-# 		"About this item" content
-# 		URL of each page
+import mysql.connector
+
 
 queries=["Laptops with AMD Ryzen 5 processor"]
 class AmazonSpider(scrapy.Spider):
     name = 'amazon'
+    def __init__(self):
+        self.mydb=mysql.connector.connect(host="localhost",user="root",passwd="root",database="employee_db")
+        self.executer = self.mydb.cursor()
+        self.executer.execute("use internship_task")
 
     def start_requests(self):
         for query in queries:
             url = 'https://www.amazon.in/s?' + urlencode({'k': query})
             print(f"###########URL################{url}")
-            yield scrapy.Request(url=url, callback=self.parse_keyword_response)
+            yield scrapy.Request(url=url, callback = self.parse_keyword_response)
 
     def parse_keyword_response(self, response):
         products = response.xpath('//*[@data-asin]') #taking all tags with data-asin attribute
@@ -76,8 +75,9 @@ class AmazonSpider(scrapy.Spider):
             except FileExistsError:
                 os.mkdir(f"{full_path}")
                 urllib.request.urlretrieve(image_url,full_path+".jpg")
-                # print("2")
 
-
+        insert_command=f"insert into data(title,product_url,image_url,rating,price,about_product,published_date) values ('{title}','{product_url}','{image_url}','{rating}','{price}','{about_product}','{published_date}');"
+        self.executer.execute(insert_command)
+        self.mydb.commit()
         
-        yield {'Title': title,'product_url':product_url, 'image_url': image_url, 'Rating': rating,'Price': price,'About_product': about_product,'published_date':published_date}
+        # yield {'Title': title,'product_url':product_url, 'image_url': image_url, 'Rating': rating,'Price': price,'About_product': about_product,'published_date':published_date}
