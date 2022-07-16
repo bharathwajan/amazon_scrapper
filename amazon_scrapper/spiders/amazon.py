@@ -51,32 +51,33 @@ class AmazonSpider(scrapy.Spider):
         print("#########about product#########",about_product[0:3])
 
         published_date=response.xpath('//*[@id="productDetails_detailBullets_sections1"]/tbody/tr[4]/td/text()').extract_first()
+
+        if published_date==None:
+            published_date="NULL"
         
         print("###########published date#########",published_date)
 
-        # image = re.search('"large":"(.*?)"',response.text).groups()[0]
         image_url=response.xpath('//*[@id="imgTagWrapperId"]/img/@src').extract_first() 
 
-        #downling image using url
 
-        full_path="images/"+title.split("/")[0]+"/"
-        file_name=full_path.split("/")[1]
+        exp="[a-zA-Z0-9]+"
+
+        path="images/"+" ".join(re.findall(exp,title))[:10]+"/"
+
+        path_imgname = path+f"{title[0:11]}.jpg"
+
         try:
-            urllib.request.urlretrieve(image_url,full_path+".jpg")
-            # print("0")
-        except FileNotFoundError:
-            try:
-                os.mkdir("images")
-                os.mkdir(f"{full_path}")
-                # print(os.curdir)
-                # print(full_path)
-                urllib.request.urlretrieve(image_url,full_path+f"{file_name}.jpg")
-                # print("1")
-            except FileExistsError:
-                os.mkdir(f"{full_path}")
-                urllib.request.urlretrieve(image_url,full_path+".jpg")
+            os.makedirs(path)
+            urllib.request.urlretrieve(image_url , path_imgname)
+        except:
+            path_imgname=path+f"{title[0:11]}(1).jpg"
+            urllib.request.urlretrieve(image_url , path_imgname)
 
-        insert_command=f"insert into data(title,product_url,image_url,rating,price,about_product,published_date) values ('{title}','{product_url}','{image_url}','{rating}','{price}','{about_product}','{published_date}');"
+        title=" ".join(re.findall(exp,title))  #using this for avoiding sql syntax errors
+        about_product="".join(about_product[0:len(about_product)])
+        about_product=" ".join(re.findall(exp,about_product))
+        
+        insert_command=f"insert into data(title,product_url,image_url,rating,price,about_product,published_date) values ('{title}','{product_url}','{image_url}','{rating}','{price[0]}','{about_product}','{published_date}');"
         self.executer.execute(insert_command)
         self.mydb.commit()
         
