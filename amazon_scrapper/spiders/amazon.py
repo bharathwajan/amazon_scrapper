@@ -59,7 +59,6 @@ class AmazonSpider(scrapy.Spider):
 
         image_url=response.xpath('//*[@id="imgTagWrapperId"]/img/@src').extract_first() 
 
-
         exp="[a-zA-Z0-9]+"
 
         path="images/"+" ".join(re.findall(exp,title))[:10]+"/"
@@ -76,7 +75,7 @@ class AmazonSpider(scrapy.Spider):
         title=" ".join(re.findall(exp,title))  #using this for avoiding sql syntax errors
         about_product="".join(about_product[0:len(about_product)])
         about_product=" ".join(re.findall(exp,about_product))
-        
+
         insert_command=f"insert into data(title,product_url,image_url,rating,price,about_product,published_date) values ('{title}','{product_url}','{image_url}','{rating}','{price[0]}','{about_product}','{published_date}');"
         self.executer.execute(insert_command)
         self.mydb.commit()
