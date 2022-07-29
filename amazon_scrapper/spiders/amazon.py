@@ -17,43 +17,41 @@ class AmazonSpider(scrapy.Spider):
     def start_requests(self):
         for query in queries:
             url = 'https://www.amazon.in/s?' + urlencode({'k': query})
-            print(f"###########URL################{url}")
             yield scrapy.Request(url=url, callback = self.parse_keyword_response)
 
     def parse_keyword_response(self, response):
-        products = response.xpath('//*[@data-asin]') #taking all tags with data-asin attribute
+        products = response.xpath('//*[@data-asin]') 
         print(products)
         for product in products:
-            asin = product.xpath('@data-asin').extract_first()  #extracting the value of data-asin
-            # print("#########ASIN##########",asin) #ASIN ---> amazon standard identification number
+            asin = product.xpath('@data-asin').extract_first()  
+            # print("#########ASIN##########",asin) #ASIN ------> amazon standard identification number
             product_url = f"https://www.amazon.in/dp/{asin}"
             yield scrapy.Request(url=product_url, callback=self.parse_product_page, meta={'asin': asin}) #meta can be considered as a dictionary passed as an argument
 
     def parse_product_page(self, response): 
         asin = response.meta['asin']
-        print("#########inside parse product page#############")
+
 
         product_url=f"https://www.amazon.in/dp/{asin}"
-        print("############product_url#############",product_url)
+
 
         title = response.xpath('//*[@id="productTitle"]/text()').extract_first()
-        print("######################Product Title###########",title)
+
 
         rating = response.xpath('//*[@id="acrPopover"]/@title').extract_first()
-        print('#########rating########',rating)
+
 
         price=response.xpath('//*[@id="corePriceDisplay_desktop_feature_div"]/div[1]/span[2]/span[1]/text()').extract()
-        print('##############price##########',price[0])
+
 
         about_product = response.xpath('//*[@id="feature-bullets"]//li/span/text()').extract() #// li represents all li tags
-        print("#########about product#########",about_product[0:3])
+
 
         published_date=response.xpath('//*[@id="productDetails_detailBullets_sections1"]/tbody/tr[4]/td/text()').extract_first()
 
         if published_date==None:
             published_date="NULL"
-        
-        print("###########published date#########",published_date)
+
 
         image_url=response.xpath('//*[@id="imgTagWrapperId"]/img/@src').extract_first() 
 
