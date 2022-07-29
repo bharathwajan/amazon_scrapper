@@ -5,7 +5,6 @@ import urllib.request
 import os
 import mysql.connector
 
-
 queries=["Laptops with AMD Ryzen 5 processor"]
 class AmazonSpider(scrapy.Spider):
     name = 'amazon'
@@ -30,50 +29,28 @@ class AmazonSpider(scrapy.Spider):
 
     def parse_product_page(self, response): 
         asin = response.meta['asin']
-
-
         product_url=f"https://www.amazon.in/dp/{asin}"
-
-
         title = response.xpath('//*[@id="productTitle"]/text()').extract_first()
-
-
         rating = response.xpath('//*[@id="acrPopover"]/@title').extract_first()
-
-
         price=response.xpath('//*[@id="corePriceDisplay_desktop_feature_div"]/div[1]/span[2]/span[1]/text()').extract()
-
-
         about_product = response.xpath('//*[@id="feature-bullets"]//li/span/text()').extract() #// li represents all li tags
-
-
         published_date=response.xpath('//*[@id="productDetails_detailBullets_sections1"]/tbody/tr[4]/td/text()').extract_first()
-
         if published_date==None:
             published_date="NULL"
-
-
         image_url=response.xpath('//*[@id="imgTagWrapperId"]/img/@src').extract_first() 
-
         exp="[a-zA-Z0-9]+"
-
         path="images/"+" ".join(re.findall(exp,title))[:10]+"/"
-
         path_imgname = path+f"{title[0:11]}.jpg"
-
         try:
             os.makedirs(path)
             urllib.request.urlretrieve(image_url , path_imgname)
         except:
             path_imgname=path+f"{title[0:11]}(1).jpg"
             urllib.request.urlretrieve(image_url , path_imgname)
-
         title=" ".join(re.findall(exp,title))  #using this for avoiding sql syntax errors
         about_product="".join(about_product[0:len(about_product)])
         about_product=" ".join(re.findall(exp,about_product))
-
         insert_command=f"insert into data(title,product_url,image_url,rating,price,about_product,published_date) values ('{title}','{product_url}','{image_url}','{rating}','{price[0]}','{about_product}','{published_date}');"
         self.executer.execute(insert_command)
         self.mydb.commit()
-        
         # yield {'Title': title,'product_url':product_url, 'image_url': image_url, 'Rating': rating,'Price': price,'About_product': about_product,'published_date':published_date}
