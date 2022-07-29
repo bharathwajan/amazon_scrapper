@@ -2,7 +2,7 @@ import scrapy
 from urllib.parse import urlencode
 import re
 import urllib.request
-import os
+import os    
 import mysql.connector
 
 queries=["Laptops with AMD Ryzen 5 processor"]
