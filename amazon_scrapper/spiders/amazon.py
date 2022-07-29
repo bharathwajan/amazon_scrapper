@@ -24,11 +24,9 @@ class AmazonSpider(scrapy.Spider):
         products = response.xpath('//*[@data-asin]') #taking all tags with data-asin attribute
         print(products)
         for product in products:
-            # print("###############Product#############",product,type(product))
             asin = product.xpath('@data-asin').extract_first()  #extracting the value of data-asin
-            # print("#########ASIN##########",asin)
+            # print("#########ASIN##########",asin) #ASIN ---> amazon standard identification number
             product_url = f"https://www.amazon.in/dp/{asin}"
-            # print("################ product URL ##############",product_url)
             yield scrapy.Request(url=product_url, callback=self.parse_product_page, meta={'asin': asin}) #meta can be considered as a dictionary passed as an argument
 
     def parse_product_page(self, response): 
