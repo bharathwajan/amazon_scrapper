@@ -5,7 +5,7 @@ import urllib.request
 import os    
 import mysql.connector
 
-queries=["Laptops with AMD Ryzen 5 processor"]
+queries=['Laptops with AMD Ryzen 5 processor']
 class AmazonSpider(scrapy.Spider):
     name = 'amazon'
     def __init__(self):
