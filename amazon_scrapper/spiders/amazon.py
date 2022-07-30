@@ -2,12 +2,12 @@ import scrapy
 from urllib.parse import urlencode
 import re
 import urllib.request
-import os
+import os    
 import mysql.connector
-
-queries=["Laptops with AMD Ryzen 5 processor"]
+queries=['Laptops with AMD Ryzen 5 processor']
 class AmazonSpider(scrapy.Spider):
-    name = 'amazon'
+    name = "amazon"
+    #test
     def __init__(self):
         self.mydb=mysql.connector.connect(host="localhost",user="root",passwd="root",database="employee_db")
         self.executer = self.mydb.cursor()
@@ -28,7 +28,7 @@ class AmazonSpider(scrapy.Spider):
             yield scrapy.Request(url=product_url, callback=self.parse_product_page, meta={'asin': asin}) #meta can be considered as a dictionary passed as an argument
 
     def parse_product_page(self, response): 
-        asin = response.meta['asin']
+        asin = response.meta['asin']    
         product_url=f"https://www.amazon.in/dp/{asin}"
         title = response.xpath('//*[@id="productTitle"]/text()').extract_first()
         rating = response.xpath('//*[@id="acrPopover"]/@title').extract_first()
