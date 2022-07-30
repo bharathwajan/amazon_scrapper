@@ -29,7 +29,7 @@ class AmazonSpider(scrapy.Spider):
             yield scrapy.Request(url=product_url, callback=self.parse_product_page, meta={'asin': asin}) #meta can be considered as a dictionary passed as an argument
 
     def parse_product_page(self, response): 
-        asin = response.meta['asin']
+        asin = response.meta['asin']    
         product_url=f"https://www.amazon.in/dp/{asin}"
         title = response.xpath('//*[@id="productTitle"]/text()').extract_first()
         rating = response.xpath('//*[@id="acrPopover"]/@title').extract_first()
