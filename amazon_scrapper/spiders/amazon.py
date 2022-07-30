@@ -7,7 +7,7 @@ import mysql.connector
 
 queries=['Laptops with AMD Ryzen 5 processor']
 class AmazonSpider(scrapy.Spider):
-    name = 'amazon'
+    name = "amazon"
     def __init__(self):
         self.mydb=mysql.connector.connect(host="localhost",user="root",passwd="root",database="employee_db")
         self.executer = self.mydb.cursor()
