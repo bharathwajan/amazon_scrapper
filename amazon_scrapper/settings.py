@@ -17,7 +17,6 @@ IMAGES_STORE = 'amazon_scrapper/spiders/scrapped_images'
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'amazon_scrapper (+http://www.yourdomain.com)'
 
-# Obey robots.txt rules
 ROBOTSTXT_OBEY = False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
