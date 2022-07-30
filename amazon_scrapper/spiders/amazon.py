@@ -4,7 +4,6 @@ import re
 import urllib.request
 import os    
 import mysql.connector
-
 queries=['Laptops with AMD Ryzen 5 processor']
 class AmazonSpider(scrapy.Spider):
     name = "amazon"
